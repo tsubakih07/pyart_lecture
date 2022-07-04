@@ -67,8 +67,6 @@ for swp in range(radar.nsweeps):
 
     # calc average elevation angle for a sweep
     elev = np.mean(radar.elevation['data'][:ray_end])
-    # print(elev)
-
     
     #colorbar
     if var == '1':
