@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 radar_name = 'RCWF'
 # radar_name = 'RCTP'
 
-# file name
-file = '20210912_0548_RCWF_VOL.654'   # RCWF
+# --- file name ---
+file = '20210912_0548_RCWF_VOL.654'     # RCWF
 # file = 'TIA210912055005.RAW60CY'        # RCTP
 
 #loc is the path where you store your unzipped radar data
@@ -14,19 +14,30 @@ file = '20210912_0548_RCWF_VOL.654'   # RCWF
 loc='data/'+radar_name+'/'
 des='img/CROSS/'
 
-angle = [0,90,180,270]
+# --- set cross-section ---
+#   cross-section originate from radar site
+#   angle start from north = 0 deg
+# --------------------------------------------
+angle = [0,90,180,270]  # degree
+length = 50             # km
 
-# for file in [r'\RCWF\20190809_0101_RCWF_VOL.239',r'\RCTP\TIA180710190009.RAW48V7']:
-
-#judge Level II or SIGMET
+# judge Level II or SIGMET
 if radar_name == 'RCWF':
     #decode data stored in radar object
     radar = pyart.io.read_nexrad_archive(loc+file)
     name = radar.metadata['instrument_name']
+    #get time label from file name
+    date = file.split('_')[0]
+    time = file.split('_')[1]
 elif radar_name == 'RCTP':
     #decode data stored in radar object
     radar = pyart.io.read_sigmet(loc+file)
     name = 'RCTP'
+    #get time label from file name
+    date = file.split('TIA')[1]
+    time = date.split('.')[0]
+    date = ''
+
 xsect = pyart.util.cross_section_ppi(radar,angle)
 display = pyart.graph.RadarDisplay(xsect)
 
@@ -44,10 +55,10 @@ for ang in range(len(angle)):
     fig = plt.figure(figsize=(6,4))
 
     #plot cross section
-    display.plot('reflectivity', ang, fig=fig, cmap=cmap, norm=norm, vmin=min(clv), vmax=max(clv), ticks=clv, colorbar_label='reflectivity (dBZ)', axislabels=('Distance (km)','Altitude (km)'), title=name+' reflectivity cross section at '+str(angle[ang])+'degrees')
-    display.set_limits(xlim=(0,50),ylim=(0,10))
+    display.plot('reflectivity', ang, fig=fig, cmap=cmap, norm=norm, vmin=min(clv), vmax=max(clv), ticks=clv, colorbar_label='reflectivity (dBZ)', axislabels=('Distance (km)','Altitude (km)'), title=name+' reflectivity cross section at '+str(angle[ang])+' deg')
+    display.set_limits(xlim=(0,length),ylim=(0,10))
 
-    figname = des+name+str(angle[ang])+'_dBZ_CS.png'
+    #output setting
+    figname = des+name+'_'+date+time+'_'+str(angle[ang]).zfill(3)+'_dBZ_CS.png'
     print('Output is in ',figname)
-    # plt.close()
     plt.savefig(figname)

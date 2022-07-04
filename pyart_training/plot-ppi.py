@@ -29,8 +29,7 @@ loc='data/'+radar_name+'/'
 des='img/PPI/'
 
 
-# for file in [loc+'RCWF/20210912_0548_RCWF_VOL.654',loc+'RCTP/TIA210912055005.RAW60CY']:
-#judge Level II or SIGMET
+# judge Level II or SIGMET
 if radar_name == 'RCWF':
     #decode data stored in radar object
     radar = pyart.io.read_nexrad_archive(loc+file)
@@ -41,7 +40,7 @@ elif radar_name == 'RCTP':
     name = 'RCTP'
 display = pyart.graph.RadarMapDisplay(radar)
 
-#basic radar information
+# get radar location
 lon = radar.longitude['data'][0]
 lat = radar.latitude['data'][0]
 
@@ -52,15 +51,21 @@ for swp in range(radar.nsweeps):
     dx = math.ceil(stoprange/100.)
     
     #first ray and its time and elevation in every sweep
-    ray0 = radar.sweep_start_ray_index['data'][swp]
-    time = str(pyart.util.datetimes_from_radar(radar)[ray0]).split(' ')
+    ray_stat = radar.sweep_start_ray_index['data'][swp]
+    ray_end  = radar.sweep_end_ray_index['data'][swp]
+    time = str(pyart.util.datetimes_from_radar(radar)[ray_stat]).split(' ')
     date = time[0]
     tmlbl = str(time[1]).split(':')
     hh = tmlbl[0]
     mm = tmlbl[1]
     sec = tmlbl[2]
 
-    elev = radar.elevation['data'][ray0]
+    # elev = radar.elevation['data'][ray_stat]
+
+    # calc average elevation angle for a sweep
+    elev = np.mean(radar.elevation['data'][:ray_end])
+    # print(elev)
+
     
     #colorbar
     if var == '1':
@@ -76,7 +81,7 @@ for swp in range(radar.nsweeps):
         savename = 'V'
         unit = 'm s$^{-1}$'
         radcolors = [(0.50,0.00,1.00),(0.50,0.50,1.00),(0.00,0.70,0.30),(0.00,0.90,0.30),(0.50,1.00,0.50),(0.70,1.00,0.70),(0.90,0.90,0.90),(1.00,1.00,0.00),(1.00,0.70,0.00),(0.75,0.53,0.28),(0.63,0.44,0.35),(0.87,0.37,0.47),(0.94,0.27,0.42)]
-        nyq_vel = radar.instrument_parameters['nyquist_velocity']['data'][ray0]
+        nyq_vel = radar.instrument_parameters['nyquist_velocity']['data'][ray_stat]
         #auto choosing colorbar range
         if round(nyq_vel/6.) <= 1:
             dc = 1
@@ -131,6 +136,7 @@ for swp in range(radar.nsweeps):
         yy = length*1000*math.cos(dirdeg*math.pi/180)
         display.plot_line_xy([0,xx],[0,yy],color='black',line_style='-')
 
+    #output setting
     figname = des+name+'_'+date+'_'+hh+mm+'_'+savename+'_'+str(swp+1)+'.png'
     print('Output is in ',figname)
     plt.savefig(figname)
