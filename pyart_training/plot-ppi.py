@@ -40,6 +40,9 @@ elif radar_name == 'RCTP':
     name = 'RCTP'
 display = pyart.graph.RadarMapDisplay(radar)
 
+# open if you want to see radar data info 
+radar.info(level='full')
+
 # get radar location
 lon = radar.longitude['data'][0]
 lat = radar.latitude['data'][0]

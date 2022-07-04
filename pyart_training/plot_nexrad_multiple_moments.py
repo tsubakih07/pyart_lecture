@@ -66,6 +66,7 @@ display.plot('spectrum_width', 0, ax=ax,
             #  projection=map_proj)
 display.set_limits((-300, 300), (-300, 300), ax=ax)
 
+# adjust space between plots
 plt.subplots_adjust(wspace=0.3, hspace=0.5)
 
-plt.savefig("img/test.png")
+plt.savefig("img/plot_all.png")
