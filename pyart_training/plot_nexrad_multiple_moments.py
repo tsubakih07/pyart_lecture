@@ -27,7 +27,7 @@ display = pyart.graph.RadarDisplay(radar)
 # set sweep no. to plot (0~17 for RCWF)
 sweep = 0
 
-# set range to plot
+# set maximum range to plot
 rmax = 150
 
 # start plotting

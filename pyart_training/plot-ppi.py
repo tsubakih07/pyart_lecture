@@ -16,12 +16,8 @@ cross = input('need cross-section?:')
 #ignore warning
 warnings.filterwarnings('ignore')
 
-radar_name = 'RCWF'
-# radar_name = 'RCTP'
-
-# file name
-file = '20210912_0548_RCWF_VOL.654'   # RCWF
-# file = 'TIA210912055005.RAW60CY'        # RCTP
+# radar_name = 'RCWF'
+radar_name = 'RCTP'
 
 #loc is the path where you store your unzipped radar data
 #des is the path where you want to store the radar figures you plot
@@ -31,10 +27,14 @@ des='img/PPI/'
 
 # judge Level II or SIGMET
 if radar_name == 'RCWF':
+    # file name
+    file = '20210912_0548_RCWF_VOL.654'   # RCWF    
     #decode data stored in radar object
     radar = pyart.io.read_nexrad_archive(loc+file)
     name = radar.metadata['instrument_name']
 elif radar_name == 'RCTP':
+    # file name
+    file = 'TIA210912055005.RAW60CY'        # RCTP
     #decode data stored in radar object
     radar = pyart.io.read_sigmet(loc+file)
     name = 'RCTP'
